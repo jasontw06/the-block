@@ -4,152 +4,101 @@
 
 # The Block
 
-### A coding challenge from OPENLANE
+Buyer-side vehicle auction prototype for the OPENLANE coding challenge.
 
 ## How to Run
+
+Requires Node.js 20+.
 
 ```bash
 npm install
 npm run dev
 ```
 
-Then open http://127.0.0.1:5173/
+Open the local URL shown in the terminal, typically http://localhost:5173/.
+
+Other useful commands:
+
+```bash
+npm run build
+npm run preview
+npm run lint
+npm test
+npm run test:watch
+```
+
+## Time Spent
+
+I stayed within the challenge time box and built in thin vertical slices: app shell → inventory browse → search/filter/sort → detail → bidding → auction status → polish → load more → tests. That kept each piece reviewable and avoided spending the whole budget on setup.
+
+## Assumptions and Scope
+
+**Included**
+- Browse, search, filter, and sort inventory from `data/vehicles.json`
+- Vehicle detail with gallery, specs, condition, seller info, and pricing
+- Local bidding with shared state, validation, and `localStorage` persistence
+- Normalized auction status (Upcoming / Live / Ended) relative to “now”
+- Load more on inventory (24 at a time)
+- Responsive layout for desktop and mobile
+- Automated Vitest coverage for core bidding, auction, inventory, and persistence logic
+
+**Skipped / simplified**
+- No auth, payments, checkout, or seller tools
+- No backend or real-time multi-bidder sync
+- Bids are simulated in the browser only
+- Auction timestamps are synthetic; they are remapped around the current time so the demo has a mix of upcoming, live, and ended lots
+- Fixed bid increment of CAD $250
+
+## Stack
+
+- **Frontend:** React 19, TypeScript, Vite, React Router
+- **Styling:** CSS Modules + shared design tokens
+- **Testing:** Vitest, jsdom, React Testing Library
+- **Backend:** None (frontend-only prototype)
+- **Database:** None — static JSON plus local bid overlays
+
+## What I Built
+
+A buyer auction flow:
+
+1. Browse inventory with cards and load more
+2. Narrow results with search, filters, and sort
+3. Open a lot detail page and inspect photos, condition, and pricing
+4. Place a bid when the auction is live
+5. See the updated bid and bid count immediately on both detail and inventory pages, with the state preserved after refresh
+
+Shared inventory state keeps list and detail in sync. Bid overrides are persisted separately from the base dataset so reloads do not double-count bids.
+
+## Notable Decisions
+
+- **Frontend-only.** Fits the prototype scope and keeps setup trivial for reviewers.
+- **Context + reducer for inventory.** Enough shared state for bidding without adding Redux/Zustand.
+- **Persist bid overrides, not the full catalog.** Storage key `openlane-auction-bids:v1` stores `currentBid` and `additionalBidCount` per vehicle.
+- **Normalize auction times once at load.** Preserves relative order, maps the dataset into a ±24h window, and uses a 2-hour auction duration so status can change during a session.
+- **Gate bidding in both UI and store.** Non-live lots cannot place bids even if `placeBid` is called directly.
+- **Pure helpers for search/sort/bid/auction rules.** Keeps page components thin and logic easier to explain in a walkthrough.
+- **Load more instead of full dump.** Initial 24 cards keeps the first screen manageable without infinite scroll complexity.
+
+## Testing
+
+Automated tests (`npm test`) cover:
+
+- Bid minimums and validation
+- Auction status boundaries and closed-bidding messages
+- Inventory search, AND filters, sorting, and immutability
+- Bid override persistence and safe handling of corrupted storage
+- Critical UI: detail route, not-found state, bid form feedback, disabled auction states, inventory card bid updates
+
+Also verified manually for search/filter flows, gallery, load more, and desktop/mobile layout, plus `npm run lint` and `npm run build`.
+
+## What I'd Do With More Time
+
+- Expand component coverage around inventory controls and load more
+- Watchlist / “your bids” view
+- Stronger image handling (real assets, better fallbacks)
+- Optional buy-now flow as a separate path
+- Light analytics around search usage and drop-off on detail
 
 ---
 
-OPENLANE powers one of the world's largest digital marketplaces for used vehicles. Every day, thousands of vehicles move through our platform - inspected, listed, auctioned, and sold. Your job is to interpret what we do and bring a working prototype to life.
-
-We're hiring for a team that builds fast, thinks independently, and takes ownership. This challenge is part of that process.
-
-## The Challenge
-
-Build the **buyer side of a vehicle auction platform as a web or mobile application**. We've included a dataset of 200 vehicles in [`data/vehicles.json`](data/vehicles.json), each listed by a selling dealership.
-
-A buyer should be able to browse inventory, inspect vehicle details, and place bids. That's the core experience. How you structure the product and how far you take it is up to you.
-
-## Core Requirements
-
-- Browse and search the vehicle inventory
-- Vehicle detail views with specs, condition, damage notes, selling dealership, and photos
-- A bidding experience where a buyer can place bids on vehicles
-- A usable experience that works well on the platform you choose
-- Clear instructions in your README for how to run the project locally
-
-## Assumptions You Can Make
-
-- This is a prototype, not a production launch.
-- Please spend no more than 3-4 hours of work on this. If you spend more, that's your call, but we do not expect a fully built marketplace.
-- Use any framework, language, or stack.
-- If you want stack examples that fit this challenge, React + Vite is a good web option, and SwiftUI for iOS or Compose for Android are reasonable native mobile examples. None of these are required.
-- You may use AI tools and coding assistants, and their use is encouraged. Be ready to explain how you used them, what decisions you made, and what parts of the implementation you would refine.
-- Authentication and user accounts are **not required**.
-- A frontend-only implementation is completely acceptable.
-- You do **not** need to build seller workflows, checkout, payments, or dealer admin tooling.
-- Auction timestamps in the dataset are synthetic scheduling data. If you want to show countdowns or "live" states, it's fine to normalize them relative to "now" in your prototype.
-- Make reasonable product decisions, document your assumptions, and optimize for clarity over surface area.
-
-## Minimum Bar
-
-At a minimum, we want to see:
-
-- Inventory browsing and search
-- A clear vehicle detail experience
-- A bid flow with updated visible state
-- A usable experience on desktop and mobile
-- A repo we can clone and run by following your README
-
-## Stretch Ideas
-
-These are optional. Only do them if the basics are solid.
-
-- We care more about judgment than about any specific extra feature.
-- If you go beyond the basics, focus on improvements that make the buyer experience clearer, more useful, or more trustworthy.
-- That could show up in product decisions, UX details, implementation quality, or any other thoughtful extension that fits the timebox.
-
-## What to Submit
-
-1. **Fork this repo** to your own GitHub account
-2. Complete the challenge work in your fork
-3. Include a **README** in your repo with setup instructions and notable decisions
-4. When you're finished, share the link to your repo with your contact at **OPENLANE**
-
-We've included a [submission template](SUBMISSION.md) if you want a starting point.
-
-We should be able to clone your repo and have it running locally by following your README.
-
-## Timeline
-
-You have **5 days** from when you receive this challenge to submit it.
-
-This is not a speed run. We care more about your decisions and tradeoffs than the total number of features.
-
-## What Happens Next
-
-After you submit, we'll schedule a **45-60 minute walkthrough** where you'll screen-share and walk us through what you built. More details are in [`WALKTHROUGH.md`](WALKTHROUGH.md).
-
-## How We Evaluate
-
-We're not checking boxes. Here's what we care about:
-
-| | What we're looking at |
-|---|---|
-| **Product thinking** | Did you make smart decisions about what to build and how it should work? Does the UX make sense? |
-| **Craft** | Does it look and feel intentional? The details matter - design, layout quality, polish. |
-| **Technical quality** | Is the code clean, well-structured, and easy to follow? |
-| **Judgment** | Did you scope the work well for the time budget and make sensible tradeoffs? |
-| **Workflow** | Can you walk us through how you built it and why? (assessed in the walkthrough) |
-
-## The Data
-
-The vehicle dataset is at [`data/vehicles.json`](data/vehicles.json). Each vehicle includes:
-
-- Lot number, VIN, make, model, year, and trim
-- Specs (engine, transmission, drivetrain, fuel type, odometer)
-- Condition (grade, report, damage notes, title status)
-- Auction details (starting bid, reserve price, buy now price, auction start time)
-- Current bid and bid count (some vehicles already have active bids)
-- Location (city and province)
-- Selling dealership
-- Placeholder image URLs
-
-Here's what a single vehicle looks like:
-
-```json
-{
-  "id": "3cc3b89e-68b0-479e-af39-bca6251ea0b4",
-  "vin": "TRD7L1KS0HNB5X3K3",
-  "year": 2023,
-  "make": "Ford",
-  "model": "Bronco",
-  "trim": "Big Bend",
-  "body_style": "SUV",
-  "exterior_color": "Burgundy",
-  "interior_color": "Beige",
-  "engine": "2.7L EcoBoost V6",
-  "transmission": "automatic",
-  "drivetrain": "4WD",
-  "odometer_km": 47731,
-  "fuel_type": "gasoline",
-  "condition_grade": 3.8,
-  "condition_report": "Average condition. Has some visible wear on high-touch surfaces. Engine and transmission perform within normal parameters.",
-  "damage_notes": [
-    "Scratch on liftgate",
-    "Minor rust on wheel wells",
-    "Paint peeling on roof rack"
-  ],
-  "title_status": "clean",
-  "province": "Ontario",
-  "city": "Toronto",
-  "auction_start": "2026-04-05T14:00:00",
-  "starting_bid": 14500,
-  "reserve_price": 25000,
-  "buy_now_price": null,
-  "images": ["https://placehold.co/800x600?text=2023+Ford+Bronco+Photo+1", "..."],
-  "selling_dealership": "King City Auto",
-  "lot": "A-0043",
-  "current_bid": 22800,
-  "bid_count": 16
-}
-```
-
-The data is synthetic but meant to feel realistic. Use it however you want. Should you need reasonable accommodation, please reach out to careers@openlane.com
+Original challenge brief: see [`CHALLENGE.md`](./CHALLENGE.md).
