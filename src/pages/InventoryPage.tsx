@@ -15,11 +15,14 @@ import {
 import { useInventory } from "../state/useInventory";
 import styles from "./InventoryPage.module.css";
 
+const PAGE_SIZE = 24;
+
 export function InventoryPage() {
   const { vehicles } = useInventory();
   const [controls, setControls] = useState<InventoryControlsState>(
     DEFAULT_INVENTORY_CONTROLS,
   );
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
   const makeOptions = useMemo(() => getMakeOptions(vehicles), [vehicles]);
   const bodyStyleOptions = useMemo(
@@ -31,7 +34,7 @@ export function InventoryPage() {
     [vehicles],
   );
 
-  const visibleVehicles = useMemo(
+  const matchedVehicles = useMemo(
     () => selectVisibleVehicles(vehicles, controls),
     [vehicles, controls],
   );
@@ -41,14 +44,23 @@ export function InventoryPage() {
     [controls],
   );
 
-  const count = visibleVehicles.length;
+  const totalCount = matchedVehicles.length;
+  const shownCount = Math.min(visibleCount, totalCount);
+  const pagedVehicles = matchedVehicles.slice(0, shownCount);
+  const hasMore = shownCount < totalCount;
 
   function updateControls(patch: Partial<InventoryControlsState>) {
     setControls((current) => ({ ...current, ...patch }));
+    setVisibleCount(PAGE_SIZE);
   }
 
   function handleClearAll() {
     setControls(DEFAULT_INVENTORY_CONTROLS);
+    setVisibleCount(PAGE_SIZE);
+  }
+
+  function handleLoadMore() {
+    setVisibleCount((current) => current + PAGE_SIZE);
   }
 
   return (
@@ -82,11 +94,11 @@ export function InventoryPage() {
 
       <div className={styles.resultBar}>
         <p className={styles.summary}>
-          {count} {count === 1 ? "vehicle" : "vehicles"}
+          {totalCount} {totalCount === 1 ? "vehicle" : "vehicles"}
         </p>
       </div>
 
-      {count === 0 ? (
+      {totalCount === 0 ? (
         <div className={styles.emptyState}>
           <h2 className={styles.emptyTitle}>No vehicles found</h2>
           <p className={styles.emptyMessage}>
@@ -101,13 +113,32 @@ export function InventoryPage() {
           </button>
         </div>
       ) : (
-        <ul className={styles.grid}>
-          {visibleVehicles.map((vehicle) => (
-            <li key={vehicle.id} className={styles.item}>
-              <VehicleCard vehicle={vehicle} />
-            </li>
-          ))}
-        </ul>
+        <>
+          <ul className={styles.grid}>
+            {pagedVehicles.map((vehicle) => (
+              <li key={vehicle.id} className={styles.item}>
+                <VehicleCard vehicle={vehicle} />
+              </li>
+            ))}
+          </ul>
+
+          <div className={styles.loadMoreSection}>
+            <p className={styles.showingSummary} aria-live="polite">
+              Showing {shownCount} of {totalCount}{" "}
+              {totalCount === 1 ? "vehicle" : "vehicles"}
+            </p>
+
+            {hasMore ? (
+              <button
+                type="button"
+                className={styles.loadMoreButton}
+                onClick={handleLoadMore}
+              >
+                Load more vehicles
+              </button>
+            ) : null}
+          </div>
+        </>
       )}
     </main>
   );
