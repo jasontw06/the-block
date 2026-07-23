@@ -6,6 +6,15 @@
 
 ### A coding challenge from OPENLANE
 
+## How to Run
+
+```bash
+npm install
+npm run dev
+```
+
+Then open http://127.0.0.1:5173/
+
 ---
 
 OPENLANE powers one of the world's largest digital marketplaces for used vehicles. Every day, thousands of vehicles move through our platform - inspected, listed, auctioned, and sold. Your job is to interpret what we do and bring a working prototype to life.

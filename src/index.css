@@ -1,0 +1,45 @@
+:root {
+  --color-bg: #0f1419;
+  --color-surface: #1a222d;
+  --color-text: #e8eef5;
+  --color-muted: #9aa8b8;
+  --color-accent: #3d8bfd;
+  --font-sans: "Segoe UI", system-ui, sans-serif;
+  --space: 1rem;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background: var(--color-bg);
+  color: var(--color-text);
+  line-height: 1.5;
+}
+
+a {
+  color: var(--color-accent);
+  text-decoration: none;
+}
+
+.app-header {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space);
+  padding: var(--space) calc(var(--space) * 1.5);
+  border-bottom: 1px solid #2a3544;
+  background: var(--color-surface);
+}
+
+.brand {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+main {
+  padding: calc(var(--space) * 1.5);
+}
