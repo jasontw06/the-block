@@ -1,6 +1,14 @@
 import { useCallback, useMemo, useReducer, type ReactNode } from "react";
 import { vehicles as baseVehicles } from "../data/vehicles";
 import {
+  getAuctionSnapshot,
+  getBiddingClosedMessage,
+} from "../lib/auction";
+import {
+  auctionBounds,
+  auctionNormalizationAnchor,
+} from "../lib/auctionBounds";
+import {
   loadPersistedBidState,
   savePersistedBidState,
   type PersistedBidState,
@@ -100,10 +108,28 @@ export function InventoryProvider({ children }: { children: ReactNode }) {
 
   const placeBid = useCallback(
     (vehicleId: string, amount: number): PlaceBidResult => {
-      if (!knownVehicleIds.has(vehicleId)) {
+      const baseVehicle = baseVehicles.find(
+        (vehicle) => vehicle.id === vehicleId,
+      );
+
+      if (!baseVehicle || !knownVehicleIds.has(vehicleId)) {
         return {
           ok: false,
           message: "We could not place your bid. Please try again.",
+        };
+      }
+
+      const auction = getAuctionSnapshot(
+        baseVehicle.auction_start,
+        auctionBounds,
+        auctionNormalizationAnchor,
+        Date.now(),
+      );
+
+      if (auction.status !== "live") {
+        return {
+          ok: false,
+          message: getBiddingClosedMessage(auction.status),
         };
       }
 

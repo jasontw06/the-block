@@ -10,6 +10,10 @@ import {
   isBiddingAvailable,
   validateBid,
 } from "../../lib/bid";
+import {
+  getBiddingClosedMessage,
+  type AuctionStatus,
+} from "../../lib/auction";
 import { formatCurrency } from "../../lib/format";
 import { useInventory } from "../../state/useInventory";
 import type { Vehicle } from "../../types/vehicle";
@@ -17,9 +21,10 @@ import styles from "./BidForm.module.css";
 
 type BidFormProps = {
   vehicle: Vehicle;
+  auctionStatus: AuctionStatus;
 };
 
-export function BidForm({ vehicle }: BidFormProps) {
+export function BidForm({ vehicle, auctionStatus }: BidFormProps) {
   const { placeBid } = useInventory();
   const inputId = useId();
   const errorId = useId();
@@ -30,10 +35,12 @@ export function BidForm({ vehicle }: BidFormProps) {
     [vehicle.current_bid, vehicle.starting_bid],
   );
 
-  const biddingAvailable = isBiddingAvailable(
+  const pricingAvailable = isBiddingAvailable(
     vehicle.current_bid,
     vehicle.starting_bid,
   );
+  const auctionOpen = auctionStatus === "live";
+  const biddingAvailable = pricingAvailable && auctionOpen;
 
   const [amountInput, setAmountInput] = useState(
     minimumBid !== null ? String(minimumBid) : "",
@@ -50,6 +57,13 @@ export function BidForm({ vehicle }: BidFormProps) {
     }
   }, [minimumBid, vehicle.id]);
 
+  useEffect(() => {
+    if (!auctionOpen) {
+      setSuccessMessage(null);
+      setErrorMessage(null);
+    }
+  }, [auctionOpen]);
+
   const liveValidation = validateBid(amountInput, minimumBid);
   const canSubmit =
     biddingAvailable && !isSubmitting && liveValidation.valid;
@@ -57,7 +71,7 @@ export function BidForm({ vehicle }: BidFormProps) {
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    if (isSubmitting) {
+    if (isSubmitting || !auctionOpen) {
       return;
     }
 
@@ -91,10 +105,18 @@ export function BidForm({ vehicle }: BidFormProps) {
     }
   }
 
-  if (!biddingAvailable || minimumBid === null) {
+  if (!pricingAvailable || minimumBid === null) {
     return (
       <div className={styles.unavailable} role="status">
         Bidding is unavailable because pricing information is incomplete.
+      </div>
+    );
+  }
+
+  if (!auctionOpen) {
+    return (
+      <div className={styles.unavailable} role="status">
+        {getBiddingClosedMessage(auctionStatus)}
       </div>
     );
   }

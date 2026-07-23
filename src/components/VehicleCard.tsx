@@ -1,4 +1,6 @@
 import { Link } from "react-router-dom";
+import { getAuctionSnapshot } from "../lib/auction";
+import { auctionBounds, auctionNormalizationAnchor } from "../lib/auctionBounds";
 import {
   formatConditionGrade,
   formatCurrency,
@@ -11,7 +13,9 @@ import {
   getVehicleSubtitle,
   getVehicleTitle,
 } from "../lib/vehicle";
+import { useNow } from "../state/useNow";
 import type { Vehicle } from "../types/vehicle";
+import { AuctionStatusBadge } from "./AuctionStatusBadge";
 import styles from "./VehicleCard.module.css";
 
 type VehicleCardProps = {
@@ -19,6 +23,13 @@ type VehicleCardProps = {
 };
 
 export function VehicleCard({ vehicle }: VehicleCardProps) {
+  const now = useNow();
+  const auction = getAuctionSnapshot(
+    vehicle.auction_start,
+    auctionBounds,
+    auctionNormalizationAnchor,
+    now,
+  );
   const imageUrl = vehicle.images[0];
   const title = getVehicleTitle(vehicle);
   const subtitle = getVehicleSubtitle(vehicle);
@@ -54,6 +65,13 @@ export function VehicleCard({ vehicle }: VehicleCardProps) {
               Cond. {formatConditionGrade(vehicle.condition_grade)}
             </span>
           </div>
+
+          <AuctionStatusBadge
+            status={auction.status}
+            label={auction.label}
+            detail={auction.detail}
+            compact
+          />
 
           <h2 className={styles.title}>{title}</h2>
           {subtitle ? <p className={styles.subtitle}>{subtitle}</p> : null}

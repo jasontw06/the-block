@@ -1,0 +1,47 @@
+.block,
+.compact {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem 0.55rem;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.5rem;
+  padding: 0.12rem 0.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.badge[data-status="upcoming"] {
+  border-color: #3d5f8a;
+  background: color-mix(in srgb, #3d5f8a 24%, transparent);
+  color: #b7d4f5;
+}
+
+.badge[data-status="live"] {
+  border-color: #2f6b4f;
+  background: color-mix(in srgb, #2f6b4f 24%, transparent);
+  color: #b6f0d0;
+}
+
+.badge[data-status="ended"] {
+  border-color: #6b7280;
+  background: color-mix(in srgb, #6b7280 20%, transparent);
+  color: #d1d5db;
+}
+
+.detail {
+  color: var(--color-muted);
+  font-size: 0.8125rem;
+}
+
+.compact .detail {
+  font-size: 0.75rem;
+}
