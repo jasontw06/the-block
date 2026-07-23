@@ -9,13 +9,15 @@ import {
   auctionNormalizationAnchor,
 } from "../lib/auctionBounds";
 import {
+  applyBidOverrides,
+  createBidOverride,
+} from "../lib/bidOverrides";
+import {
   loadPersistedBidState,
   savePersistedBidState,
   type PersistedBidState,
   type VehicleBidOverride,
 } from "../lib/bidStorage";
-import { toFiniteNumber } from "../lib/format";
-import type { Vehicle } from "../types/vehicle";
 import {
   InventoryContext,
   type InventoryContextValue,
@@ -50,34 +52,9 @@ function inventoryReducer(
   return {
     overrides: {
       ...state.overrides,
-      [vehicleId]: {
-        vehicleId,
-        currentBid: amount,
-        additionalBidCount: (existing?.additionalBidCount ?? 0) + 1,
-        latestBidAt: placedAt,
-      },
+      [vehicleId]: createBidOverride(vehicleId, amount, existing, placedAt),
     },
   };
-}
-
-function applyOverrides(
-  vehicles: readonly Vehicle[],
-  overrides: Record<string, VehicleBidOverride>,
-): Vehicle[] {
-  return vehicles.map((vehicle) => {
-    const override = overrides[vehicle.id];
-    if (!override) {
-      return vehicle;
-    }
-
-    const baseBidCount = toFiniteNumber(vehicle.bid_count) ?? 0;
-
-    return {
-      ...vehicle,
-      current_bid: override.currentBid,
-      bid_count: baseBidCount + override.additionalBidCount,
-    };
-  });
 }
 
 function createInitialState(): InventoryState {
@@ -97,7 +74,7 @@ export function InventoryProvider({ children }: { children: ReactNode }) {
   );
 
   const vehicles = useMemo(
-    () => applyOverrides(baseVehicles, state.overrides),
+    () => applyBidOverrides(baseVehicles, state.overrides),
     [state.overrides],
   );
 
