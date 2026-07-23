@@ -8,6 +8,7 @@ import {
   getReserveStatusLabel,
 } from "../../lib/vehicle";
 import type { Vehicle } from "../../types/vehicle";
+import { BidForm } from "../bidding/BidForm";
 import styles from "./VehiclePricingSummary.module.css";
 
 type VehiclePricingSummaryProps = {
@@ -92,9 +93,7 @@ export function VehiclePricingSummary({ vehicle }: VehiclePricingSummaryProps) {
 
       <div className={styles.biddingSlot} aria-label="Bidding">
         <h3 className={styles.biddingTitle}>Place a bid</h3>
-        <p className={styles.biddingCopy}>
-          Review pricing above before offering on this lot.
-        </p>
+        <BidForm vehicle={vehicle} />
       </div>
     </aside>
   );

@@ -2,7 +2,6 @@ import { useMemo, useState } from "react";
 import { InventoryFilters } from "../components/InventoryFilters";
 import { InventoryToolbar } from "../components/InventoryToolbar";
 import { VehicleCard } from "../components/VehicleCard";
-import { vehicles } from "../data/vehicles";
 import {
   DEFAULT_INVENTORY_CONTROLS,
   getBodyStyleOptions,
@@ -13,20 +12,28 @@ import {
   type InventoryControlsState,
   type SortOption,
 } from "../lib/inventorySelectors";
+import { useInventory } from "../state/useInventory";
 import styles from "./InventoryPage.module.css";
 
 export function InventoryPage() {
+  const { vehicles } = useInventory();
   const [controls, setControls] = useState<InventoryControlsState>(
     DEFAULT_INVENTORY_CONTROLS,
   );
 
-  const makeOptions = useMemo(() => getMakeOptions(vehicles), []);
-  const bodyStyleOptions = useMemo(() => getBodyStyleOptions(vehicles), []);
-  const provinceOptions = useMemo(() => getProvinceOptions(vehicles), []);
+  const makeOptions = useMemo(() => getMakeOptions(vehicles), [vehicles]);
+  const bodyStyleOptions = useMemo(
+    () => getBodyStyleOptions(vehicles),
+    [vehicles],
+  );
+  const provinceOptions = useMemo(
+    () => getProvinceOptions(vehicles),
+    [vehicles],
+  );
 
   const visibleVehicles = useMemo(
     () => selectVisibleVehicles(vehicles, controls),
-    [controls],
+    [vehicles, controls],
   );
 
   const canClear = useMemo(

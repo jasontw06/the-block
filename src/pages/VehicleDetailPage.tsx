@@ -5,12 +5,13 @@ import { VehicleHeader } from "../components/vehicle-detail/VehicleHeader";
 import { VehiclePricingSummary } from "../components/vehicle-detail/VehiclePricingSummary";
 import { VehicleSpecifications } from "../components/vehicle-detail/VehicleSpecifications";
 import { SellerInformation } from "../components/vehicle-detail/SellerInformation";
-import { vehicles } from "../data/vehicles";
+import { useInventory } from "../state/useInventory";
 import styles from "./VehicleDetailPage.module.css";
 
 export function VehicleDetailPage() {
   const { id } = useParams();
-  const vehicle = id ? vehicles.find((item) => item.id === id) : undefined;
+  const { getVehicleById } = useInventory();
+  const vehicle = id ? getVehicleById(id) : undefined;
 
   if (!vehicle) {
     return (
