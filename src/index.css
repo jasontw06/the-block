@@ -10,11 +10,23 @@
   --color-text-secondary: #b7c2d0;
   --color-muted: #8b98a8;
   --color-accent: #5b9cff;
+  --color-danger: #f0b4b4;
+  --color-danger-border: #c98585;
+  --color-success: #b6f0d0;
+  --color-success-border: #2f6b4f;
 
   --font-sans: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
   --content-max: 1120px;
   --radius-md: 10px;
   --header-height: 3.5rem;
+  --control-height: 44px;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --transition-fast: 180ms ease;
 }
 
 *,
@@ -25,11 +37,13 @@
 
 html {
   -webkit-text-size-adjust: 100%;
+  overflow-x: clip;
 }
 
 body {
   margin: 0;
   min-height: 100vh;
+  overflow-x: clip;
   font-family: var(--font-sans);
   background:
     radial-gradient(1200px 600px at 10% -10%, #1a2740 0%, transparent 55%),
@@ -48,6 +62,7 @@ img {
 
 .app {
   min-height: 100vh;
+  min-width: 0;
 }
 
 .app-header {
@@ -57,7 +72,7 @@ img {
   display: flex;
   align-items: center;
   min-height: var(--header-height);
-  padding: 0.75rem clamp(1rem, 3vw, 1.5rem);
+  padding: 0.75rem clamp(0.75rem, 3vw, 1.5rem);
   border-bottom: 1px solid var(--color-border);
   background: color-mix(in srgb, var(--color-surface) 92%, transparent);
   backdrop-filter: blur(10px);
@@ -69,6 +84,7 @@ img {
   letter-spacing: -0.02em;
   color: var(--color-text);
   text-decoration: none;
+  transition: color var(--transition-fast);
 }
 
 .brand:hover {
@@ -78,4 +94,15 @@ img {
 .brand:focus-visible {
   outline: 2px solid var(--color-accent);
   outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
 }

@@ -107,16 +107,32 @@ export function BidForm({ vehicle, auctionStatus }: BidFormProps) {
 
   if (!pricingAvailable || minimumBid === null) {
     return (
-      <div className={styles.unavailable} role="status">
-        Bidding is unavailable because pricing information is incomplete.
+      <div
+        className={styles.unavailable}
+        data-status="pricing"
+        role="status"
+      >
+        <p className={styles.unavailableTitle}>Bidding unavailable</p>
+        <p className={styles.unavailableMessage}>
+          Bidding is unavailable because pricing information is incomplete.
+        </p>
       </div>
     );
   }
 
   if (!auctionOpen) {
     return (
-      <div className={styles.unavailable} role="status">
-        {getBiddingClosedMessage(auctionStatus)}
+      <div
+        className={styles.unavailable}
+        data-status={auctionStatus}
+        role="status"
+      >
+        <p className={styles.unavailableTitle}>
+          {auctionStatus === "upcoming" ? "Auction upcoming" : "Auction ended"}
+        </p>
+        <p className={styles.unavailableMessage}>
+          {getBiddingClosedMessage(auctionStatus)}
+        </p>
       </div>
     );
   }
@@ -159,7 +175,9 @@ export function BidForm({ vehicle, auctionStatus }: BidFormProps) {
           <p id={errorId} className={styles.error} role="alert">
             {errorMessage}
           </p>
-        ) : null}
+        ) : (
+          <div className={styles.errorSlot} aria-hidden="true" />
+        )}
       </div>
 
       <button

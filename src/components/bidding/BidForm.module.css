@@ -37,7 +37,7 @@
 
 .input {
   width: 100%;
-  min-height: 44px;
+  min-height: var(--control-height);
   padding: 0.65rem 0.85rem;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
@@ -46,6 +46,7 @@
   font: inherit;
   font-size: 1rem;
   font-variant-numeric: tabular-nums;
+  transition: border-color var(--transition-fast);
 }
 
 .input:hover:not(:disabled) {
@@ -64,17 +65,22 @@
 }
 
 .input[aria-invalid="true"] {
-  border-color: #c98585;
+  border-color: var(--color-danger-border);
+}
+
+.errorSlot {
+  min-height: 1.35rem;
 }
 
 .error {
   margin: 0;
-  color: #f0b4b4;
+  color: var(--color-danger);
   font-size: 0.875rem;
+  line-height: 1.4;
 }
 
 .submit {
-  min-height: 44px;
+  min-height: var(--control-height);
   padding: 0.7rem 1rem;
   border: 1px solid transparent;
   border-radius: var(--radius-md);
@@ -84,10 +90,17 @@
   font-size: 0.9375rem;
   font-weight: 700;
   cursor: pointer;
+  transition:
+    filter var(--transition-fast),
+    transform var(--transition-fast);
 }
 
 .submit:hover:not(:disabled) {
   filter: brightness(1.05);
+}
+
+.submit:active:not(:disabled) {
+  transform: translateY(1px);
 }
 
 .submit:focus-visible {
@@ -101,18 +114,20 @@
 }
 
 .statusRegion {
-  min-height: 1.25rem;
+  min-height: 3.25rem;
 }
 
 .success {
   margin: 0;
   padding: 0.65rem 0.75rem;
-  border: 1px solid #2f6b4f;
+  border: 1px solid var(--color-success-border);
+  border-left-width: 3px;
   border-radius: var(--radius-md);
-  background: color-mix(in srgb, #2f6b4f 18%, transparent);
-  color: #b6f0d0;
+  background: color-mix(in srgb, var(--color-success-border) 18%, transparent);
+  color: var(--color-success);
   font-size: 0.875rem;
   line-height: 1.45;
+  animation: feedbackIn 200ms ease;
 }
 
 .note {
@@ -124,11 +139,56 @@
 
 .unavailable {
   margin: 0;
-  padding: 0.75rem 0.85rem;
+  padding: 0.85rem 0.9rem;
   border: 1px solid var(--color-border);
+  border-left-width: 3px;
   border-radius: var(--radius-md);
   background: var(--color-surface-elevated);
   color: var(--color-text-secondary);
   font-size: 0.875rem;
-  line-height: 1.45;
+  line-height: 1.5;
+}
+
+.unavailable[data-status="upcoming"] {
+  border-left-color: #5b9cff;
+}
+
+.unavailable[data-status="ended"] {
+  border-left-color: #9aa3af;
+}
+
+.unavailable[data-status="pricing"] {
+  border-left-color: #c98585;
+}
+
+.unavailableTitle {
+  margin: 0 0 0.25rem;
+  color: var(--color-text);
+  font-size: 0.875rem;
+  font-weight: 650;
+}
+
+.unavailableMessage {
+  margin: 0;
+}
+
+@keyframes feedbackIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .success {
+    animation: none;
+  }
+
+  .submit:active:not(:disabled) {
+    transform: none;
+  }
 }

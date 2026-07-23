@@ -4,6 +4,7 @@
   flex-wrap: wrap;
   align-items: center;
   gap: 0.4rem 0.55rem;
+  min-width: 0;
 }
 
 .badge {
@@ -17,6 +18,7 @@
   font-weight: 700;
   letter-spacing: 0.02em;
   text-transform: uppercase;
+  flex-shrink: 0;
 }
 
 .badge[data-status="upcoming"] {
@@ -40,6 +42,7 @@
 .detail {
   color: var(--color-muted);
   font-size: 0.8125rem;
+  overflow-wrap: anywhere;
 }
 
 .compact .detail {
